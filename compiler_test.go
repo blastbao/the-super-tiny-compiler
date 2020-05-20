@@ -76,6 +76,7 @@ var testAst = ast{
 	},
 }
 
+
 func TestTokenizer(t *testing.T) {
 	result := tokenizer(testInput)
 	if !reflect.DeepEqual(result, testTokens) {

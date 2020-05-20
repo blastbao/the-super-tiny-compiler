@@ -157,24 +157,32 @@
  *
  *   {
  *     type: 'Program',
- *     body: [{
+ *     body: [
+ *		{
  *       type: 'CallExpression',
  *       name: 'add',
- *       params: [{
- *         type: 'NumberLiteral',
- *         value: '2'
- *       }, {
- *         type: 'CallExpression',
- *         name: 'subtract',
- *         params: [{
- *           type: 'NumberLiteral',
- *           value: '4'
- *         }, {
- *           type: 'NumberLiteral',
- *           value: '2'
- *         }]
- *       }]
- *     }]
+ *       params: [
+ *       	{
+ *         		type: 'NumberLiteral',
+ *         		value: '2'
+ *       	},
+ *       	{
+ *         		type: 'CallExpression',
+ *         		name: 'subtract',
+ *         		params: [
+ *         			{
+ *           			type: 'NumberLiteral',
+ *          		 	value: '4'
+ *         			},
+ *         			{
+ *           			type: 'NumberLiteral',
+ *           			value: '2'
+ *         			},
+ *         		]
+ *      	},
+ *       ]
+ *		},
+ *     ]
  *   }
  */
 
@@ -206,7 +214,9 @@
  *   {
  *     type: 'CallExpression',
  *     name: 'subtract',
- *     params: [...nested nodes go here...]
+ *     params: [
+ *         ...nested nodes go here...
+ *     ]
  *   }
  *
  * When transforming the AST we can manipulate nodes by
@@ -224,27 +234,35 @@
  * traverse through them. This traversal process goes to each node in the AST
  * depth-first.
  *
- *   {
- *     type: 'Program',
- *     body: [{
- *       type: 'CallExpression',
- *       name: 'add',
- *       params: [{
- *         type: 'NumberLiteral',
- *         value: '2'
- *       }, {
- *         type: 'CallExpression',
- *         name: 'subtract',
- *         params: [{
- *           type: 'NumberLiteral',
- *           value: '4'
- *         }, {
- *           type: 'NumberLiteral',
- *           value: '2'
- *         }]
- *       }]
- *     }]
- *   }
+ *	{
+ *     	type: 'Program',
+ *     	body: [
+ *     	  {
+ *       	 type: 'CallExpression',
+ *       	 name: 'add',
+ *       	 params: [
+ *       		{
+ *         			type: 'NumberLiteral',
+ *         			value: '2'
+ *       		},
+ *       		{
+ *         			type: 'CallExpression',
+ *         			name: 'subtract',
+ *         			params: [
+ *         				{
+ *           				type: 'NumberLiteral',
+ *           				value: '4'
+ *        				},
+ *        				{
+ *          			 	type: 'NumberLiteral',
+ *           				value: '2'
+ *         				},
+ *         			]
+ *       		},
+ *       	 ]
+ *        },
+ *     	]
+ *	}
  *
  * So for the above AST we would go:
  *
@@ -269,8 +287,8 @@
  * has methods that will accept different node types.
  *
  *   var visitor = {
- *     NumberLiteral() {},
- *     CallExpression() {}
+ *     	NumberLiteral() {},
+ *     	CallExpression() {}
  *   };
  *
  * When we traverse our AST we will call the methods on this visitor whenever we
@@ -280,8 +298,8 @@
  * the parent node.
  *
  *   var visitor = {
- *     NumberLiteral(node, parent) {},
- *     CallExpression(node, parent) {}
+ *     	NumberLiteral(node, parent) {},
+ *     	CallExpression(node, parent) {}
  *   };
  */
 
@@ -532,16 +550,17 @@ func isLetter(char string) bool {
 // Would cause the Go compiler to complain about a recursive type. When we want
 // to use one of these types to pass through to a function, for example, we'd
 // use `&` as it'd be a reference. But we'll come to that a bit later on.
+//
 type node struct {
-	kind       string
-	value      string
-	name       string
-	callee     *node
-	expression *node
-	body       []node
-	params     []node
-	arguments  *[]node
-	context    *[]node
+	kind       string	// "Program", "NumberLiteral", "CallExpression",
+	value      string	//
+	name       string	//
+	callee     *node	//
+	expression *node	//
+	body       []node	//
+	params     []node	//
+	arguments  *[]node	//
+	context    *[]node	//
 }
 
 // Type `ast` is just another alias type. I find this makes part of the code
@@ -555,8 +574,10 @@ var pc int
 // This variable will store our slice of `token`s inside of it.
 var pt []token
 
+
 // Okay, so we define a `parser` function that accepts our slice of `tokens`.
 func parser(tokens []token) ast {
+
 	// Here, we initially give both the parser counter and the parser tokens a
 	// value.
 	pc = 0
@@ -573,7 +594,7 @@ func parser(tokens []token) ast {
 	// below this, we'll be pushing nodes to our `ast.body` slice.
 	//
 	// The reason we are doing this inside a loop is because our program can have
-	// `CallExpressions` after one another instead of being nested.
+	// `CallExpressions` after another one instead of being nested.
 	//
 	//   (add 2 2)
 	//   (subtract 4 2)
@@ -593,6 +614,7 @@ func walk() node {
 	// Inside the walk function we start by grabbing the `current` token.
 	token := pt[pc]
 
+
 	// We're going to split each type of token off into a different code path,
 	// starting off with `number` tokens.
 	//
@@ -609,6 +631,7 @@ func walk() node {
 			value: token.value,
 		}
 	}
+
 
 	// Next we're going to look for CallExpressions. We start this off when we
 	// encounter an open parenthesis.
